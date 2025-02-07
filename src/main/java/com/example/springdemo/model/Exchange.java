@@ -1,4 +1,5 @@
 package com.example.springdemo.model;
+import org.springframework.stereotype.Component;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import java.math.BigDecimal;
@@ -34,6 +35,7 @@ public class Exchange{
         for(Match match:matches){
             totalSizeFilled = totalSizeFilled.add(match.sizeFilled);
             sumPrice = sumPrice.add(match.price);
+            orderbook.trades.add(new Trade(match.price,match.sizeFilled,order.bid));
         }
         BigDecimal avgPrice = sumPrice.divide(new BigDecimal(matches.size()),2, RoundingMode.HALF_UP);
         System.out.printf("filled MARKET order -> %s | size: [%f] | avgPrice: [%f]%n",order.ID,totalSizeFilled,avgPrice);
@@ -131,6 +133,11 @@ public class Exchange{
 
     public User HandleGetOrders(String userId){
         return users.get(userId);
+    }
+
+    public ArrayList<Trade> HandleGetTrades(Market market){
+        Orderbook orderbook = orderbooks.get(market);
+        return orderbook.trades;
     }
 }
 

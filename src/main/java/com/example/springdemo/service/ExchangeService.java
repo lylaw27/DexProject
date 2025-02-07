@@ -5,6 +5,7 @@ import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.UUID;
 
 
@@ -20,11 +21,12 @@ public class ExchangeService {
         return exchange.HandleGetOrderbook(market);
     }
     public User HandleGetOrders(String userId){ String realUserId = userId.toLowerCase(); return exchange.HandleGetOrders(realUserId);}
-    public BigDecimal HandleGetBestBid(Market market) {
-        return exchange.HandleGetBestBid(market);
-    }
+    public BigDecimal HandleGetBestBid(Market market) {return exchange.HandleGetBestBid(market);}
     public BigDecimal HandleGetBestAsk(Market market) {
         return exchange.HandleGetBestAsk(market);
+    }
+    public ArrayList<Trade> HandleGetTrades(Market market) {
+        return exchange.HandleGetTrades(market);
     }
     public void HandleCancelOrder(Market market,UUID orderId) {
         exchange.HandleCancelOrder(market,orderId);

@@ -8,10 +8,12 @@ public class Orderbook {
     HashMap<BigDecimal, Limit> AskLimits;
     HashMap<BigDecimal, Limit> BidLimits;
     HashMap<UUID,Order> orders;
+    ArrayList<Trade> trades;
 
     public Orderbook() {
         asks = new TreeSet<>((a, b) -> a.price.compareTo(b.price));
         bids = new TreeSet<>((a, b) -> b.price.compareTo(a.price));
+        trades = new ArrayList<>();
         AskLimits = new HashMap<>();
         BidLimits = new HashMap<>();
         orders = new HashMap<>();

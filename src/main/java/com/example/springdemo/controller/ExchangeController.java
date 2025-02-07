@@ -50,6 +50,11 @@ public class ExchangeController {
         return service.HandleGetOrders(userId);
     }
 
+    @GetMapping("/trades/{market}")
+    public ArrayList<Trade> HandleGetTrades(@PathVariable Market market){
+        return service.HandleGetTrades(market);
+    }
+
     @DeleteMapping("/book/{market}/{orderId}")
     public String HandleCancelOrder(@PathVariable Market market, @PathVariable UUID orderId){
         service.HandleCancelOrder(market,orderId);
