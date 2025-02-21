@@ -10,8 +10,10 @@ import java.io.IOException;
 import java.math.BigDecimal;
 
 public class ETHTransaction {
-    public static TransactionReceipt TransferETH(Web3j web3, Credentials fromAddress, Credentials toAddress, BigDecimal amount){
+    public static TransactionReceipt TransferETH(Web3j web3, User fromUser, User toUser, BigDecimal amount){
         try {
+            Credentials fromAddress = fromUser.getCredentials();
+            Credentials toAddress = toUser.getCredentials();
             return Transfer.sendFunds(
                 web3, fromAddress, toAddress.getAddress(),
                 amount, Convert.Unit.ETHER).send();

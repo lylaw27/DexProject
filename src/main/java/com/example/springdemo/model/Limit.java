@@ -16,45 +16,43 @@ public class Limit {
         this.orderList = new TreeSet<>(Comparator.comparingLong(a -> a.timestamp));
     }
 
-    public void AddOrder(Order order) {
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public BigDecimal getTotalVolume() {
+        return totalVolume;
+    }
+
+    void AddOrder(Order order) {
         order.limit = this;
+        order.price = this.price;
         orderList.add(order);
         totalVolume = totalVolume.add(order.size);
     }
 
-    public void DeleteOrder(Order order) {
-        order.limit = null;
+    void DeleteOrder(Order order) {
         orderList.remove(order);
-        if(order.bid){
-            order.user.bids.remove(order);
-        }
-        else{
-            order.user.asks.remove(order);
-        }
         totalVolume = totalVolume.subtract(order.size);
     }
 
-    public ArrayList<Match> Fill(Order incomingOrder) {
+    ArrayList<Match> Fill(Order incomingOrder) {
         ArrayList<Match> matches = new ArrayList<>();
-        ArrayList<Order> emptyOrders = new ArrayList<>();
         for (Order bookOrder : this.orderList) { //loop through the limits
             Match match = this.FillOrder(incomingOrder, bookOrder);
             matches.add(match);
             totalVolume = totalVolume.subtract(match.sizeFilled);
             if (bookOrder.isFilled()) {
-                emptyOrders.add(bookOrder);
+                this.DeleteOrder(bookOrder);
             }
             if (incomingOrder.isFilled()) {
                 break;
             }
         }
-        for (Order bookOrder : emptyOrders) {
-            this.DeleteOrder(bookOrder);
-        }
         return matches;
     }
 
-    public Match FillOrder(Order orderA, Order orderB) {
+    Match FillOrder(Order orderA, Order orderB) {
         Order ask;
         Order bid;
         BigDecimal sizeFilled;
@@ -77,7 +75,4 @@ public class Limit {
         return new Match(orderB.ID,ask, bid, sizeFilled, this.price);
     }
 
-    public String toString() {
-        return String.format("price: %.2f | volume: %.2f", price, totalVolume);
-    }
 }

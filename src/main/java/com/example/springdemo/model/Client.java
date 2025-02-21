@@ -1,7 +1,9 @@
 package com.example.springdemo.model;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClient;
 
+import java.util.ArrayList;
 import java.util.UUID;
 import java.math.BigDecimal;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -38,13 +40,19 @@ public class Client {
                 .retrieve()
                 .toBodilessEntity();
     }
-    public UserInfo GetOrders(String userId){
-        UserInfo response = restClient.get()
-        .uri("http://localhost:8080/order/{userId}",userId)
-        .accept(APPLICATION_JSON)
-        .retrieve()
-        .toEntity(UserInfo.class)
+    public ArrayList<Trade> GetTrades() {
+        return restClient.get()
+                .uri("http://localhost:8080/trades/{market}",Market.ETH)
+                .retrieve()
+                .toEntity(new ParameterizedTypeReference<ArrayList<Trade>>() {})
                 .getBody();
-        return response;
+    }
+    public User GetOrders(String userId){
+        return restClient.get()
+                .uri("http://localhost:8080/order/{userId}",userId)
+                .accept(APPLICATION_JSON)
+                .retrieve()
+                .toEntity(User.class)
+                .getBody();
     }
 }

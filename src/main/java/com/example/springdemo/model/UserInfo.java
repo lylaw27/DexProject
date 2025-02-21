@@ -1,22 +1,31 @@
 package com.example.springdemo.model;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 public class UserInfo {
-    ArrayList<Order> bids;
-    ArrayList<Order> asks;
+    ArrayList<Order> orders;
     String userId;
+    BigDecimal shares;
+    BigDecimal fmv;
     public UserInfo(){
-        bids = new ArrayList<>();
-        asks = new ArrayList<>();
+        orders = new ArrayList<>();
+        shares = new BigDecimal(0);
+        fmv = new BigDecimal(0);
+    }
+    public BigDecimal getFmv() {
+        return fmv;
+    }
+    public BigDecimal getShares() {
+        return shares;
+    }
+    public void setShares(BigDecimal shares) {
+        this.shares = shares;
+        this.fmv = shares.multiply(new BigDecimal("9.1"));
+    }
+    public ArrayList<Order> getOrders() {
+        return orders;
     }
 
-    public ArrayList<Order> getBids() {
-        return bids;
-    }
-
-    public ArrayList<Order> getAsks() {
-        return asks;
-    }
 }
 

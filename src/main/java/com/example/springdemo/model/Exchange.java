@@ -1,4 +1,5 @@
 package com.example.springdemo.model;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
@@ -7,37 +8,50 @@ import java.math.RoundingMode;
 import java.util.*;
 
 
-
+@Component
 public class Exchange{
     HashMap<String, User> users;
-    Credentials exchangeCredentials;
     HashMap<Market,Orderbook> orderbooks;
     Market market;
     Web3j web3;
-    public Exchange(Credentials exchangeCredentials,Web3j web3){
+    public Exchange(){
         orderbooks = new HashMap<>();
         users = new HashMap<>();
-        addUser("0x2ceb72c34ad157b00082698ea4b1813e7904a7bc154296a53299c8e0f45566c1");
-        addUser("0x659bddda8c37f9dcaaa283268127a08a58dd97e42854e2b43457d69f0a6e7a24");
-        addUser("0xa3b21763987d0bc52aa8150af25b850a108fded318b2cc87fa6fdafe818937ed");
-        addUser("0x4e9be8e31adb07901c1e640fd2bf35147ba1c696fa4fcde8cb4fb5c49a03d3c4");
+        ArrayList<String> newUserList = new ArrayList<>();
+        newUserList.add("0xf42fc529de18db578ef6c426fd0ac71eaaa7b6912be9afc4f126352aeed8f208");
+        newUserList.add("0xf72ff945fdc260d44c6311cc5f93b1100be968d950aee1241fe4a8949386ef29");
+        newUserList.add("0xeecb515ba37dba50453eb1aacca6d7ef5f9033540d9a9f82993ff530b21db7dc");
+        for (String user : newUserList){
+            addUser(user);
+        }
         orderbooks.put(Market.ETH,new Orderbook());
-        this.web3 = web3;
-        this.exchangeCredentials = exchangeCredentials;
+        users.get("0x704226575ea3b63aa30e6e4d683dd81853f4e62f").setShares(BigDecimal.valueOf(100));
+        users.get("0x4ffca2fe1bcb22d8bba7bfeacc95c734c65780d7").setShares(BigDecimal.valueOf(100));
     }
 
+    public void StartServer(Web3j web3){
+        this.web3 = web3;
+    }
+    public SortedSet<Limit> HandleGetAskLimits(Market market){
+        return orderbooks.get(market).asks;
+    }
+    public SortedSet<Limit> HandleGetBuyLimits(Market market){
+        return orderbooks.get(market).bids;
+    }
     public void HandlePlaceMarketOrder(Market market, Order order) {
         BigDecimal totalSizeFilled = new BigDecimal(0);
         BigDecimal sumPrice = new BigDecimal(0);
         Orderbook orderbook = orderbooks.get(market);
+        order.user.orders.add(order);
         ArrayList<Match> matches = orderbook.PlaceMarketOrder(order);
         HandleMatches(matches);
         for(Match match:matches){
             totalSizeFilled = totalSizeFilled.add(match.sizeFilled);
             sumPrice = sumPrice.add(match.price);
-            orderbook.trades.add(new Trade(match.price,match.sizeFilled,order.bid));
+            orderbook.trades.addFirst(new Trade(match.price,match.sizeFilled,order.bid));
         }
         BigDecimal avgPrice = sumPrice.divide(new BigDecimal(matches.size()),2, RoundingMode.HALF_UP);
+        order.price = avgPrice;
         System.out.printf("filled MARKET order -> %s | size: [%f] | avgPrice: [%f]%n",order.ID,totalSizeFilled,avgPrice);
     }
 
@@ -60,13 +74,8 @@ public class Exchange{
     public void HandlePlaceLimitOrder(Market market,BigDecimal price, Order order) {
         Orderbook orderbook = orderbooks.get(market);
         orderbook.PlaceLimitOrder(price, order);
-        if(order.bid){
-            order.user.bids.add(order);
-        }
-        else{
-            order.user.asks.add(order);
-        }
-        System.out.printf("new LIMIT order -> type:[%b] | price: [%f] | size: [%f]%n",order.bid,price,order.size);
+        order.user.orders.add(order);
+        System.out.printf("new LIMIT order -> type:[%b] | price: [%2f] | size: [%2f]%n",order.bid,price,order.size);
     }
 
     public UUID HandlePlaceOrder(PlaceOrderRequest placeOrderData) {
@@ -74,9 +83,11 @@ public class Exchange{
         Orderbook orderbook = orderbooks.get(market);
         User user = users.get(placeOrderData.getUserId().toLowerCase());
         UUID orderId = UUID.randomUUID();
+        BigDecimal bestAsk = HandleGetBestAsk(market);
+        BigDecimal bestBid = HandleGetBestBid(market);
         Order order = new Order(orderId,user,placeOrderData.getBid(), placeOrderData.getSize());
         orderbook.orders.put(order.ID,order);
-        if(placeOrderData.getOrderType() == OrderType.LIMIT){
+        if(placeOrderData.getOrderType() == OrderType.LIMIT && ((bestBid.compareTo(BigDecimal.ZERO) == 0 || bestAsk.compareTo(BigDecimal.ZERO) == 0 ||placeOrderData.bid && placeOrderData.price.compareTo(bestAsk) < 0) || (!placeOrderData.bid && placeOrderData.price.compareTo(bestBid) > 0))){
             try{
                 HandlePlaceLimitOrder(market,placeOrderData.getPrice(), order);
                 return order.ID;
@@ -119,10 +130,15 @@ public class Exchange{
 
     public void HandleMatches(ArrayList<Match> matches){
         for(Match match:matches){
-            Credentials toUser = users.get(match.bid.user.userId).getCredentials();
-            Credentials fromUser = users.get(match.ask.user.userId).getCredentials();
-            BigDecimal amount = match.sizeFilled;
-            ETHTransaction.TransferETH(web3,fromUser, toUser,amount);
+            User bidUser = users.get(match.bid.user.userId);
+            User askUser = users.get(match.ask.user.userId);
+            BigDecimal amount = match.sizeFilled.multiply(match.price);
+            bidUser.shares = bidUser.shares.add(match.sizeFilled);
+            BigDecimal oldShare = askUser.shares;
+            askUser.shares = askUser.shares.subtract(match.sizeFilled);
+            bidUser.fmv = bidUser.fmv.add(amount);
+            askUser.fmv = askUser.fmv.multiply(askUser.shares).divide(oldShare, 2, RoundingMode.HALF_UP);
+            ETHTransaction.TransferETH(web3,bidUser, askUser,amount);
         }
     }
 
@@ -135,7 +151,7 @@ public class Exchange{
         return users.get(userId);
     }
 
-    public ArrayList<Trade> HandleGetTrades(Market market){
+    public Deque<Trade> HandleGetTrades(Market market){
         Orderbook orderbook = orderbooks.get(market);
         return orderbook.trades;
     }

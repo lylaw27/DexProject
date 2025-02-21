@@ -6,9 +6,9 @@ import com.example.springdemo.service.ExchangeService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.Deque;
 import java.util.UUID;
-
+@CrossOrigin(origins = "http://localhost:3000/")
 @RestController
 public class ExchangeController {
 
@@ -51,22 +51,14 @@ public class ExchangeController {
     }
 
     @GetMapping("/trades/{market}")
-    public ArrayList<Trade> HandleGetTrades(@PathVariable Market market){
+    public Deque<Trade> HandleGetTrades(@PathVariable Market market){
         return service.HandleGetTrades(market);
     }
 
     @DeleteMapping("/book/{market}/{orderId}")
     public String HandleCancelOrder(@PathVariable Market market, @PathVariable UUID orderId){
         service.HandleCancelOrder(market,orderId);
-        return "success";
+        return "Order cancelled!";
     }
 
-}
-
-@RestController
-class HomeController {
-    @GetMapping("/")
-    public String HandlePlaceOrder(){
-        return "Hello again";
-    }
 }

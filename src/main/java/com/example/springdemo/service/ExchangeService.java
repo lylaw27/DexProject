@@ -1,19 +1,25 @@
 package com.example.springdemo.service;
 import com.example.springdemo.model.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
-import org.web3j.crypto.Credentials;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.Deque;
 import java.util.UUID;
 
 
 @RestController
 public class ExchangeService {
-    Credentials exchangeCredentials = Credentials.create("0x23e23de15849bddade0d2986e1c77fe988c19451d3b7f77929bf68899810f610");
-    Web3j web3 = Web3j.build(new HttpService("http://localhost:7545"));
-    Exchange exchange = new Exchange(exchangeCredentials,web3);
+    Web3j web3 = Web3j.build(new HttpService("http://127.0.0.1:8545"));
+
+    @Autowired
+    Exchange exchange;
+
+    public ExchangeService(Exchange exchange){
+        this.exchange = exchange;
+        exchange.StartServer(web3);
+    }
     public UUID HandlePlaceOrder(PlaceOrderRequest payload) {
         return exchange.HandlePlaceOrder(payload);
     }
@@ -25,7 +31,7 @@ public class ExchangeService {
     public BigDecimal HandleGetBestAsk(Market market) {
         return exchange.HandleGetBestAsk(market);
     }
-    public ArrayList<Trade> HandleGetTrades(Market market) {
+    public Deque<Trade> HandleGetTrades(Market market) {
         return exchange.HandleGetTrades(market);
     }
     public void HandleCancelOrder(Market market,UUID orderId) {

@@ -1,19 +1,22 @@
 package com.example.springdemo.model;
+import org.springframework.stereotype.Component;
+
 import java.math.BigDecimal;
 import java.util.*;
 
+@Component
 public class Orderbook {
     SortedSet<Limit> asks;
     SortedSet<Limit> bids;
     HashMap<BigDecimal, Limit> AskLimits;
     HashMap<BigDecimal, Limit> BidLimits;
     HashMap<UUID,Order> orders;
-    ArrayList<Trade> trades;
+    Deque<Trade> trades;
 
     public Orderbook() {
         asks = new TreeSet<>((a, b) -> a.price.compareTo(b.price));
         bids = new TreeSet<>((a, b) -> b.price.compareTo(a.price));
-        trades = new ArrayList<>();
+        trades = new LinkedList<>();
         AskLimits = new HashMap<>();
         BidLimits = new HashMap<>();
         orders = new HashMap<>();
@@ -81,6 +84,7 @@ public class Orderbook {
         Order order = orders.get(orderId);
         Limit limit = order.limit;
         limit.DeleteOrder(order);
+        order.user.orders.remove(order);
         if (limit.totalVolume.compareTo(BigDecimal.ZERO) == 0) {
             this.ClearLimit(order.bid, limit);
         }
