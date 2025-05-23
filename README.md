@@ -11,6 +11,10 @@ This project implements an order book system that interacts with the Ethereum bl
 | Real-time communication           | [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket)                                                               |
 | Frontend Exchange Platform        | [NextJs](https://nextjs.org/)              |
 
+## 🔗 Links
+
+[Demo](https://cex-frontend-fzro.vercel.app/)
+[Frontend Repository](https://github.com/lylaw27/cex-frontend)
 
 ## 🚀 Features
 
