@@ -134,7 +134,6 @@ Match FillOrder(Order marketOrder, Order limitOrder) {
 - Java JDK 17+
 - Maven 3.6+
 - Access to Ethereum node (Infura/Alchemy/self-hosted)
-- Environment variables for sensitive configuration
 
 ## Installation
 
@@ -150,21 +149,23 @@ Match FillOrder(Order marketOrder, Order limitOrder) {
 ```
 
 ##### 3. Configure environment variables:
-```bash
-   export ETH_NETWORK_URL=YOUR_ETHEREUM_NODE_URL
-   export WALLET_PRIVATE_KEY=YOUR_PRIVATE_KEY
-   export CONTRACT_ADDRESS=ORDERBOOK_CONTRACT_ADDRESS
+Edit src/main/resources/application.properties:
+```java
+//Ethereum network configuration
+eth.serverip=${ETH_NETWORK_URL}
 ```
+
 ## Usage
 
 ### Running the Application
 ```bash
-java -jar target/orderbook-1.0.0.jar
+java -jar target/ExchangeGG-1.0.0.jar
 ```
 
 ### REST API Endpoints
 The application provides REST endpoints for order management:
 ```http
+
 POST /order: Submit new order
 
 GET /order/{userId}: Get orders for specific user
@@ -182,24 +183,24 @@ GET /book/{market}/bestAsk: Get best ask order
 GET /trades/{market}: Get all executed trades
 
 DELETE /book/{market}/{orderId}: Cancel order
+
 ```
+
 ### WebSocket Endpoints
 The application provides STOMP endpoints for clients to subscribe for real-time data:
 ```http
-/sendAsks: Sends all current ask orders
-/sendBids: Sends all current bid orders
-/sendPrice: Sends all recent executed trades
+//orderbook/asks: Sends all current ask orders
+
+/orderbook/bids: Sends all current bid orders
+
+/orderbook/trades: Sends all recent executed trades
+
+/orderbook/candles: Sends the most recent 100 candles
+
+/orderbook/user/{userId} : Sends user data and orders
 ```
 
-
-## Configuration
-
-Edit src/main/resources/application.properties:
-```java
-//Ethereum network configuration
-eth.serverip=${ETH_NETWORK_URL}
-```
-## Development
+## Deployment
 
 This application is containerized with Docker and deployed to AWS ECS.
 For the ethereum network, it is a test network created with hardhat, which is installed via
