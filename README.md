@@ -9,7 +9,9 @@ This project implements an order book system that interacts with the Ethereum bl
 | Backend Exchange Services         | [Java Spring Boot](https://spring.io/)     |
 | Ethereum Deployment Environment   | [Hardhat](https://hardhat.org/)            |
 | Real-time communication           | [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket)                                                               |
-| Frontend Exchange Platform        | [NextJs](https://nextjs.org/)              |
+| Frontend Exchange Platform        | [Next](https://nextjs.org/)              |
+| Container Application Development        | [Docker](https://www.docker.com/)              |
+| Cloud Deployment        | [AWS ECS](https://aws.amazon.com/tw/ecs/)              |
 
 ## 🔗 Links
 
