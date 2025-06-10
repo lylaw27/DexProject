@@ -1,6 +1,6 @@
 # Simple Crypto Exchange Project (Central Limit Order Book)
 
-## 🧭Overview
+## 🧭 Overview
 This project implements an order book system that interacts with the Ethereum blockchain to manage and match buy/sell orders in a centralized manner. The system provides core order book functionality, using matching engine to execute trades.
 
 ## 🛠️ Technologies Used
@@ -195,45 +195,18 @@ The application provides STOMP endpoints for clients to subscribe for real-time 
 ## Configuration
 
 Edit src/main/resources/application.properties:
-properties
-# Ethereum network configuration
-web3j.network=ropsten
-web3j.node-url=${ETH_NETWORK_URL}
-
-# Contract settings
-contract.address=${CONTRACT_ADDRESS}
-gas.price=20
-gas.limit=500000
-
-
+```java
+//Ethereum network configuration
+eth.serverip=${ETH_NETWORK_URL}
+```
 ## Development
 
-### Building Smart Contracts
-Solidity contracts are in contracts/. To compile:
-bash
-solc --abi --bin contracts/OrderBook.sol -o build/
-
-
-### Testing
-Run unit tests:
-bash
-mvn test
-
-
-For integration tests with Ganache:
-bash
-mvn verify -Pintegration-test
-
-
-## Security Considerations
-
-- Never commit private keys to source control
-- Use environment variables for sensitive data
-- Test thoroughly on testnets before mainnet deployment
-- Implement proper gas estimation to avoid failed transactions
+This application is containerized with Docker and deployed to AWS ECS.
+For the ethereum network, it is a test network created with hardhat, which is installed via
+the npm package, then containerized with Docker and deployed to AWS ECS.
 
 ## License
 MIT License
 
 ## Contact
-For questions or contributions, please open an issue or contact project maintainers.
+For questions or contributions, please open an issue or contact me.
