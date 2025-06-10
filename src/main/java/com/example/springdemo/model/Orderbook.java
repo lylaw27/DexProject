@@ -2,30 +2,35 @@ package com.example.springdemo.model;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.LinkedBlockingDeque;
 
 @Component
 public class Orderbook {
-    SortedSet<Limit> asks;
-    SortedSet<Limit> bids;
+    ConcurrentSkipListSet<Limit> asks;
+    ConcurrentSkipListSet<Limit> bids;
     HashMap<BigDecimal, Limit> AskLimits;
     HashMap<BigDecimal, Limit> BidLimits;
     HashMap<UUID,Order> orders;
-    Deque<Trade> trades;
+    LinkedBlockingDeque<Candle> candleList;
+    LinkedBlockingDeque<Trade> trades;
 
     public Orderbook() {
-        asks = new TreeSet<>((a, b) -> a.price.compareTo(b.price));
-        bids = new TreeSet<>((a, b) -> b.price.compareTo(a.price));
-        trades = new LinkedList<>();
+        asks = new ConcurrentSkipListSet<>((a, b) -> a.price.compareTo(b.price));
+        bids = new ConcurrentSkipListSet<>((a, b) -> b.price.compareTo(a.price));
+        trades = new LinkedBlockingDeque<>();
         AskLimits = new HashMap<>();
         BidLimits = new HashMap<>();
         orders = new HashMap<>();
+        candleList = new LinkedBlockingDeque<>();
     }
 
     public void PlaceLimitOrder(BigDecimal price, Order order) {
         Limit limit;
         if (order.bid) {
-            limit = this.BidLimits.get(price);
+                limit = this.BidLimits.get(price);
         } else {
             limit = this.AskLimits.get(price);
         }
@@ -114,6 +119,20 @@ public class Orderbook {
             this.asks.remove(limit);
             this.AskLimits.remove(limit.price);
         }
-        System.out.printf("Clearing Limit price level [%.2f]%n",limit.price);
+//        System.out.printf("Clearing Limit price level [%.2f]%n",limit.price);
+    }
+
+    public void handleCandle(BigDecimal price) {
+        long timestamp = Instant.now().toEpochMilli()/60000*60000;
+        if(candleList.isEmpty() || candleList.getLast().timestamp != timestamp){
+            Candle candle = new Candle(price,timestamp);
+            candleList.addLast(candle);
+            if(candleList.size()>100){
+                candleList.removeFirst();
+            }
+        }
+        else{
+            candleList.getLast().update(price);
+        }
     }
 }

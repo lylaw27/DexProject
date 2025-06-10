@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.math.BigDecimal;
 import java.util.Deque;
 import java.util.UUID;
-@CrossOrigin(origins = "http://localhost:3000/")
+@CrossOrigin(origins = "*")
 @RestController
 public class ExchangeController {
 
@@ -16,7 +16,7 @@ public class ExchangeController {
     ExchangeService service;
 
     @PostMapping("/order")
-    public UUID HandlePlaceOrder(@RequestBody PlaceOrderRequest payload){
+    public synchronized UUID HandlePlaceOrder(@RequestBody PlaceOrderRequest payload){
         return service.HandlePlaceOrder(payload);
     }
 

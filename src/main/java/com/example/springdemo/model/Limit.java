@@ -4,16 +4,17 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 public class Limit {
     BigDecimal price;
-    SortedSet<Order> orderList;
+    ConcurrentSkipListSet<Order> orderList;
     BigDecimal totalVolume;
 
     public Limit(BigDecimal price) {
         this.price = price;
         totalVolume = new BigDecimal(0);
-        this.orderList = new TreeSet<>(Comparator.comparingLong(a -> a.timestamp));
+        this.orderList = new ConcurrentSkipListSet<>(Comparator.comparingLong(a -> a.timestamp));
     }
 
     public BigDecimal getPrice() {
@@ -38,7 +39,8 @@ public class Limit {
 
     ArrayList<Match> Fill(Order incomingOrder) {
         ArrayList<Match> matches = new ArrayList<>();
-        for (Order bookOrder : this.orderList) { //loop through the limits
+        SortedSet<Order> orders = new TreeSet<>(orderList);
+        for (Order bookOrder : orders) { //loop through the limits
             Match match = this.FillOrder(incomingOrder, bookOrder);
             matches.add(match);
             totalVolume = totalVolume.subtract(match.sizeFilled);

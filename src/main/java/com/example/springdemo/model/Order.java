@@ -27,10 +27,10 @@ public class Order {
     public UUID getOrderId() {
         return ID;
     }
+    public BigDecimal getOrderSize() {return orderSize;}
     public BigDecimal getSize() {
         return size;
     }
-    public BigDecimal getOrderSize() {return orderSize;}
     public BigDecimal getPrice() {return price;}
     public long getTimestamp() {
         return timestamp;

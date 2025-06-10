@@ -1,7 +1,8 @@
 package com.example.springdemo.service;
 import com.example.springdemo.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
 import java.math.BigDecimal;
@@ -9,15 +10,17 @@ import java.util.Deque;
 import java.util.UUID;
 
 
-@RestController
+@Service
 public class ExchangeService {
-    Web3j web3 = Web3j.build(new HttpService("http://127.0.0.1:8545"));
+
 
     @Autowired
     Exchange exchange;
 
-    public ExchangeService(Exchange exchange){
+    public ExchangeService(@Value("${eth.serverip}") String ethServerIp, Exchange exchange){
         this.exchange = exchange;
+        System.out.println(ethServerIp);
+        Web3j web3 = Web3j.build(new HttpService("http://" + ethServerIp));
         exchange.StartServer(web3);
     }
     public UUID HandlePlaceOrder(PlaceOrderRequest payload) {
@@ -34,7 +37,5 @@ public class ExchangeService {
     public Deque<Trade> HandleGetTrades(Market market) {
         return exchange.HandleGetTrades(market);
     }
-    public void HandleCancelOrder(Market market,UUID orderId) {
-        exchange.HandleCancelOrder(market,orderId);
-    }
+    public void HandleCancelOrder(Market market,UUID orderId) {exchange.HandleCancelOrder(market,orderId);}
 }

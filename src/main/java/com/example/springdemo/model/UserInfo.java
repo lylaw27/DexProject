@@ -2,30 +2,40 @@ package com.example.springdemo.model;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
 
 public class UserInfo {
-    ArrayList<Order> orders;
+    Deque<Order> orders;
     String userId;
     BigDecimal shares;
-    BigDecimal fmv;
+    BigDecimal purchasedAmount;
     public UserInfo(){
-        orders = new ArrayList<>();
+        orders = new LinkedList<>();
         shares = new BigDecimal(0);
-        fmv = new BigDecimal(0);
+        purchasedAmount = new BigDecimal(0);
     }
-    public BigDecimal getFmv() {
-        return fmv;
+    public BigDecimal getPurchasedAmount() {
+        return purchasedAmount;
     }
     public BigDecimal getShares() {
         return shares;
     }
     public void setShares(BigDecimal shares) {
         this.shares = shares;
-        this.fmv = shares.multiply(new BigDecimal("9.1"));
+        this.purchasedAmount = shares.multiply(new BigDecimal("40"));
     }
-    public ArrayList<Order> getOrders() {
+    public BigDecimal getTotalVolume() {
+        return orders.stream().map(Order::getSize).reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+    public Deque<Order> getOrders() {
         return orders;
     }
-
+    public void addOrder(Order order){
+        orders.addFirst(order);
+        if(orders.size() > 50){
+            orders.removeLast();
+        }
+    }
 }
 

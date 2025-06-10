@@ -1,8 +1,10 @@
 package com.example.springdemo.model;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 public class Trade {
+    UUID ID;
     BigDecimal price;
     BigDecimal size;
     boolean bid;
@@ -13,6 +15,10 @@ public class Trade {
         this.size = size;
         this.bid = bid;
         timestamp = System.nanoTime();
+    }
+
+    public UUID getID() {
+        return ID;
     }
 
     public BigDecimal getPrice() {

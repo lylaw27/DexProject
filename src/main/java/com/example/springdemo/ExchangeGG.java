@@ -5,9 +5,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
 @SpringBootApplication
-public class SpringdemoApplication {
+public class ExchangeGG {
 
     public static void main(String[] args) throws InterruptedException {
-        SpringApplication.run(SpringdemoApplication.class, args);
+        SpringApplication.run(ExchangeGG.class, args);
         OrderGenerator.GenerateOrders();
 }}

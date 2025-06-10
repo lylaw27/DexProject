@@ -47,12 +47,12 @@ public class Client {
                 .toEntity(new ParameterizedTypeReference<ArrayList<Trade>>() {})
                 .getBody();
     }
-    public User GetOrders(String userId){
+    public UserInfo GetOrders(String userId){
         return restClient.get()
                 .uri("http://localhost:8080/order/{userId}",userId)
                 .accept(APPLICATION_JSON)
                 .retrieve()
-                .toEntity(User.class)
+                .toEntity(UserInfo.class)
                 .getBody();
     }
 }
