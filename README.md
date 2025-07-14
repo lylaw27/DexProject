@@ -199,7 +199,7 @@ The application provides STOMP endpoints for clients to subscribe for real-time 
 
 /orderbook/candles: Sends the most recent 100 candles
 
-/orderbook/user/{userId} : Sends user data and orders
+/orderbook/user/{userId}: Sends user data and orders
 ```
 
 ## Deployment
