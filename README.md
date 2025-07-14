@@ -15,7 +15,7 @@ This project implements an order book system that interacts with the Ethereum bl
 
 ## 🔗 Links
 
-- [Demo](http://13.214.144.114/)
+- [Demo](http://13.212.77.9/)
 - [Frontend Repository](https://github.com/lylaw27/cex-frontend)
 
 ## 🚀 Features
@@ -191,7 +191,7 @@ DELETE /book/{market}/{orderId}: Cancel order
 ### WebSocket Endpoints
 The application provides STOMP endpoints for clients to subscribe for real-time data:
 ```http
-//orderbook/asks: Sends all current ask orders
+/orderbook/asks: Sends all current ask orders
 
 /orderbook/bids: Sends all current bid orders
 
