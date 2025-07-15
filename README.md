@@ -1,4 +1,4 @@
-# Simple Crypto Exchange Project (Central Limit Order Book)
+# Crypto Exchange in Java (Central Limit Order Book)
 
 ## 🧭 Overview
 This project implements an order book system that interacts with the Ethereum blockchain to manage and match buy/sell orders in a centralized manner. The system provides core order book functionality, using matching engine to execute trades.
@@ -15,7 +15,7 @@ This project implements an order book system that interacts with the Ethereum bl
 
 ## 🔗 Links
 
-- [Demo](http://13.212.77.9/)
+- [Demo](http://54.254.246.18/)
 - [Frontend Repository](https://github.com/lylaw27/cex-frontend)
 
 ## 🚀 Features
