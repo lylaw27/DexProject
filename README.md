@@ -15,7 +15,7 @@ This project implements an order book system that interacts with the Ethereum bl
 
 ## 🔗 Links
 
-- [Demo](http://54.254.246.18/)
+- [Demo](http://184.169.149.212/)
 - [Frontend Repository](https://github.com/lylaw27/cex-frontend)
 
 ## 🚀 Features
